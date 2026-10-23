@@ -64,13 +64,21 @@ The CI comments on your pull request with what it found. Fix the problems and pu
 ## What happens next
 
 - **A new Module** waits for the Maintainer's Approval. It may wait, and it may be declined.
-- **A new version**, or a change of tags or screenshots, is merged automatically once the CI passes.
+- **A new version**, a change of tags or screenshots, or a Withdrawal, is merged automatically once the CI passes.
 - **Anything else** goes to the Maintainer.
 
 ## Withdrawing
 
-You can withdraw one of your Modules, or one of its versions, by a pull request that adds `"withdrawn": true` to it. A withdrawn Module stays in the index, so that Hosts that installed it know, but Users no longer find it. A Withdrawal never removes a Ban.
+You can withdraw one of your Modules, or one of its versions, by a pull request that adds `"withdrawn": true` to it and changes nothing else. It is merged automatically, even if your source repository is no longer public. A withdrawn Module stays in the index, so that Hosts that installed it know, but Users no longer find it; a withdrawn version is no longer offered. Hosts tell their Users neutrally that the Creator withdrew it, and never uninstall it.
+
+A Withdrawal never removes a Ban: a pull request that touches a `banned` mark is refused, whoever opens it. Taking a Withdrawal back goes to the Maintainer.
+
+## Bans and frozen Namespaces
+
+Only the Maintainer adds or lifts a Ban, on a version, a Module or a whole Namespace, and always gives the reason. A banned Module accepts no new version, and a banned Namespace accepts nothing. Hosts that installed a banned Module warn their Users with the reason; the Module keeps working until the User uninstalls it.
+
+If the GitHub account of a Namespace is renamed, deleted or replaced by another account with the same name, the CI refuses every pull request of that Namespace and flags it to the Maintainer, who decides by hand. Until then the Namespace is frozen.
 
 ## Reporting a Module
 
-Anyone can report a Module with the **Report a Module** issue template of this repository.
+Anyone can report a Module with the **Report a Module** issue template of this repository: the Module, the version concerned, the reason, and what happens. Reports are public, so do not include personal data. The Maintainer reads every report and decides, at their sole discretion, whether to ban a version, the Module or its Namespace. To report a security vulnerability privately, contact the Creator through the Module's source repository.
