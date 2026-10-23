@@ -82,6 +82,15 @@ jobs:
           path: ${{ runner.temp }}/check/result.json
           retention-days: 7
 
+      # A Namespace whose GitHub account changed since its Approval is frozen: the label tells the Maintainer, who
+      # decides by hand in namespaces.json. The pull request is refused anyway, so a missing label only loses the signal.
+      - name: Signal a frozen Namespace to the Maintainer
+        continue-on-error: true
+        run: |
+          if [ "$(jq -r .freeze "$RUNNER_TEMP/check/result.json")" != "null" ]; then
+            gh pr edit "$PULL_REQUEST" --repo "$GITHUB_REPOSITORY" --add-label namespace-changed
+          fi
+
       - name: Fail when the pull request is refused
         if: steps.check.outputs.decision == 'refuse'
         run: |
