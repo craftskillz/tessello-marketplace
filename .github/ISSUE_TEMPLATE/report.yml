@@ -1,0 +1,44 @@
+name: Report a Module
+description: Tell the Maintainer about a Module that is harmful, misleading, broken or not what it claims.
+title: "Report: @namespace/name"
+labels: ["report"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The Maintainer reads every report and decides, at their sole discretion, whether to ban a version, a Module or a Namespace. Reports are public: do not include personal data. To report a security vulnerability in a Module privately, contact its Creator through its source repository.
+  - type: input
+    id: module
+    attributes:
+      label: Module
+      description: Its Identifier, as shown in the Marketplace.
+      placeholder: "@namespace/name"
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: The version concerned, or "all".
+      placeholder: "1.2.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: reason
+    attributes:
+      label: Reason
+      options:
+        - Malicious or harmful behaviour
+        - Does something other than it says
+        - Infringes someone's rights
+        - Broken or unusable
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: What happens
+      description: What you saw, and how to see it again.
+    validations:
+      required: true

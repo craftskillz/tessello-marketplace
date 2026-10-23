@@ -1,0 +1,148 @@
+# Checks every pull request with the Listing Verifier, comments on it, and merges it when it may be.
+#
+# Security: this workflow runs on pull_request_target, so it comes from main, never from the pull request. Nothing of the
+# pull request is checked out or run: its listing is read through the GitHub API, and its packages are read as archives.
+# The tools are Tessello's, from craftskillz/tessello at the commit pinned in .github/tessello-commit. The merge token
+# (secrets.MERGE_TOKEN) is given only to the decide job, which runs no tool and reads no file of the pull request.
+
+name: Check
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, edited, labeled]
+    branches: [main]
+
+permissions: {}
+
+# Runs of a pull request wait for each other: a newer one never cancels a merge half done.
+concurrency:
+  group: check-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      PULL_REQUEST: ${{ github.event.pull_request.number }}
+      GH_TOKEN: ${{ github.token }}
+    outputs:
+      decision: ${{ steps.check.outputs.decision }}
+    steps:
+      - name: Check out the Marketplace's main branch
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Read the pinned Tessello commit
+        id: pin
+        run: echo "commit=$(tr -d '[:space:]' < .github/tessello-commit)" >> "$GITHUB_OUTPUT"
+
+      - name: Check out Tessello's tools
+        uses: actions/checkout@v4
+        with:
+          repository: craftskillz/tessello
+          ref: ${{ steps.pin.outputs.commit }}
+          path: .tessello
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install Tessello's tools
+        working-directory: .tessello
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      # A new commit cancels an Approval given to the previous one.
+      - name: Withdraw the Approval of an earlier commit
+        if: github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'approved')
+        run: gh pr edit "$PULL_REQUEST" --repo "$GITHUB_REPOSITORY" --remove-label approved
+
+      - name: Check the pull request
+        id: check
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          node .tessello/packages/marketplace/scripts/check-pull-request.ts \
+            --repository "$GITHUB_REPOSITORY" --pull-request "$PULL_REQUEST" --out "$RUNNER_TEMP/check"
+          echo "decision=$(jq -r .decision "$RUNNER_TEMP/check/result.json")" >> "$GITHUB_OUTPUT"
+
+      - name: Comment on the pull request
+        run: gh pr comment "$PULL_REQUEST" --repo "$GITHUB_REPOSITORY" --body-file "$RUNNER_TEMP/check/comment.md" --edit-last --create-if-none
+
+      - name: Keep the result for the decision
+        uses: actions/upload-artifact@v4
+        with:
+          name: check-result
+          path: ${{ runner.temp }}/check/result.json
+          retention-days: 7
+
+      - name: Fail when the pull request is refused
+        if: steps.check.outputs.decision == 'refuse'
+        run: |
+          echo "::error::The pull request is refused: see the comment on the pull request."
+          exit 1
+
+  # Merges a new version or a metadata change, and a new Module once the Maintainer added the label "approved".
+  # Only people with triage or write access can add a label, and the Maintainer gives that access to no one else, so the
+  # label is the Maintainer's Approval. It approves the commit the pull request had when it was added: a push removes it.
+  decide:
+    needs: verify
+    if: >-
+      needs.verify.outputs.decision == 'merge' || (
+        needs.verify.outputs.decision == 'approval' && github.event.action != 'synchronize' &&
+        contains(github.event.pull_request.labels.*.name, 'approved')
+      )
+    runs-on: ubuntu-latest
+    permissions: {}
+    env:
+      PULL_REQUEST: ${{ github.event.pull_request.number }}
+      EVENT_HEAD: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: check-result
+          path: ${{ runner.temp }}/check
+
+      # The verified commit must be the one this event saw (for an Approval: the commit the label approved).
+      - name: Check the verified commit
+        run: |
+          head=$(jq -r .head "$RUNNER_TEMP/check/result.json")
+          if [ "$head" != "$EVENT_HEAD" ]; then
+            echo "::error::The pull request moved from $EVENT_HEAD to $head during the check: nothing is merged."
+            exit 1
+          fi
+
+      # Recorded before the merge, so that a merged Module never lacks its Namespace.
+      - name: Check out main to record the Namespace
+        if: needs.verify.outputs.decision == 'approval'
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          token: ${{ secrets.MERGE_TOKEN }}
+
+      # The first Approval of a Namespace records its GitHub account's numeric id, which never changes.
+      - name: Record the Namespace
+        if: needs.verify.outputs.decision == 'approval'
+        run: |
+          namespace=$(jq -c .namespace "$RUNNER_TEMP/check/result.json")
+          if [ "$namespace" = "null" ]; then exit 0; fi
+          name=$(jq -r .namespace.name "$RUNNER_TEMP/check/result.json")
+          jq --arg name "$name" --argjson record "$(jq -c .namespace.record "$RUNNER_TEMP/check/result.json")" \
+            'if has($name) then . else . + {($name): $record} end | to_entries | sort_by(.key) | from_entries' \
+            namespaces.json > "$RUNNER_TEMP/namespaces.json"
+          mv "$RUNNER_TEMP/namespaces.json" namespaces.json
+          if git diff --quiet; then exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "Record the Namespace @$name at its first Approval (#$PULL_REQUEST)"
+          git push origin main
+
+      # --match-head-commit: only the commit the CI verified is merged, never a later push.
+      - name: Merge
+        env:
+          GH_TOKEN: ${{ secrets.MERGE_TOKEN }}
+        run: gh pr merge "$PULL_REQUEST" --repo "$GITHUB_REPOSITORY" --squash --match-head-commit "$EVENT_HEAD"
