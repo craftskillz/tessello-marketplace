@@ -19,7 +19,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
 
@@ -28,16 +28,18 @@ jobs:
         run: echo "commit=$(tr -d '[:space:]' < .github/tessello-commit)" >> "$GITHUB_OUTPUT"
 
       - name: Check out Tessello's tools
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: craftskillz/tessello
           ref: ${{ steps.pin.outputs.commit }}
           path: .tessello
           persist-credentials: false
 
-      - uses: actions/setup-node@v4
+      # No dependency cache: a cache shared with pull_request_target runs could be poisoned.
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
+          package-manager-cache: false
 
       - name: Install Tessello's tools
         working-directory: .tessello
@@ -49,7 +51,7 @@ jobs:
           TESSELLO_HOST: ${{ vars.TESSELLO_HOST || 'https://tessello.pages.dev/' }}
         run: node .tessello/packages/marketplace/scripts/build-site.ts --repo "$GITHUB_WORKSPACE" --out "$RUNNER_TEMP/site" --host "$TESSELLO_HOST"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: site
           path: ${{ runner.temp }}/site

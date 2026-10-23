@@ -32,7 +32,7 @@ jobs:
       decision: ${{ steps.check.outputs.decision }}
     steps:
       - name: Check out the Marketplace's main branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           persist-credentials: false
 
@@ -41,16 +41,18 @@ jobs:
         run: echo "commit=$(tr -d '[:space:]' < .github/tessello-commit)" >> "$GITHUB_OUTPUT"
 
       - name: Check out Tessello's tools
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: craftskillz/tessello
           ref: ${{ steps.pin.outputs.commit }}
           path: .tessello
           persist-credentials: false
 
-      - uses: actions/setup-node@v4
+      # No dependency cache: a cache shared with pull_request_target runs could be poisoned.
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
+          package-manager-cache: false
 
       - name: Install Tessello's tools
         working-directory: .tessello
@@ -74,7 +76,7 @@ jobs:
         run: gh pr comment "$PULL_REQUEST" --repo "$GITHUB_REPOSITORY" --body-file "$RUNNER_TEMP/check/comment.md" --edit-last --create-if-none
 
       - name: Keep the result for the decision
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: check-result
           path: ${{ runner.temp }}/check/result.json
@@ -102,7 +104,7 @@ jobs:
       PULL_REQUEST: ${{ github.event.pull_request.number }}
       EVENT_HEAD: ${{ github.event.pull_request.head.sha }}
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: check-result
           path: ${{ runner.temp }}/check
@@ -119,7 +121,7 @@ jobs:
       # Recorded before the merge, so that a merged Module never lacks its Namespace.
       - name: Check out main to record the Namespace
         if: needs.verify.outputs.decision == 'approval'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: main
           token: ${{ secrets.MERGE_TOKEN }}
