@@ -26,7 +26,19 @@ The Marketplace never stores your `.zip`: you host it, and the listing pins it b
 - **One URL per version, never overwritten**, for example `https://jane.github.io/weather/weather-1.2.0.zip`. A published version never changes. If its file changes anyway, every install fails with "this package no longer matches the Marketplace".
 - **Keep it online.** If you take a package down, installing that version fails.
 
-## Your listing
+## Publishing with `tessello publish`
+
+Once your `.zip` is online, one command prepares the listing and opens the pull request:
+
+```sh
+npx tessello publish weather-1.0.0.zip --url https://jane.github.io/weather/weather-1.0.0.zip --accept-terms
+```
+
+`--accept-terms` says you have read this page and accept it: the command ticks the box of the pull request for you. It validates the package, computes its SHA-256, checks that the URL serves the same bytes with `Access-Control-Allow-Origin: *`, writes `entry.json` (a new listing, or your next version added to it), and runs the same check as the CI before anything is opened, so that a mistake shows up on your computer. Then, with the [GitHub CLI](https://cli.github.com/) logged in (`gh auth login`), it forks this repository if needed and opens the pull request; without it, it writes `tessello-listing/modules/<namespace>/<name>/entry.json` and tells you what to do by hand.
+
+For a new Module, `--source` is your repository (by default the `origin` of the folder you run it in) and `--license` defaults to the one GitHub reports for it. Add `--tag <tag>` for each tag, and `--dry-run` to write the listing without opening anything.
+
+## Your listing, by hand
 
 Add a folder `modules/<namespace>/<name>/` holding `entry.json` and, if you like, up to three screenshots (PNG or WebP, 500 KB at most each). Everything else (name, description, icon, Permissions, Widgets, User guide) is read from the Manifest of your package.
 
