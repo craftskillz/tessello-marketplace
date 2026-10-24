@@ -1,0 +1,6 @@
+# Made by the justfile
+.tessello/
+site/
+site-ci/
+demo/
+.DS_Store
