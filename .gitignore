@@ -4,3 +4,6 @@ site/
 site-ci/
 demo/
 .DS_Store
+
+# Made by wrangler (the Cloudflare CLI): a local cache of the account
+.wrangler/
