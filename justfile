@@ -83,8 +83,11 @@ lint: _tools
 
 # Builds index.json, its assets and the site into site/, as the Build workflow does (downloads the newest packages)
 build: _tools
-    rm -rf site
-    node {{ tessello }}/packages/marketplace/scripts/build-site.ts --repo {{ catalogue }} --out site --host {{ host }}
+    node scripts/build-site.mjs --repo "{{ catalogue }}" --out site --host "{{ host }}"
+
+# Checks presentation compatibility with the pinned generator, without the network
+test: _tools
+    node --test web/*.test.mjs
 
 # Serves site/ at http://127.0.0.1:8787/ with the CORS header the Host needs to read index.json
 serve dir="site":
@@ -133,8 +136,7 @@ demo: _tools
 
 # Builds demo/site again from demo/repo, after a change such as `CATALOGUE=demo/repo just ban …`; the server picks it up
 demo-build: _tools
-    rm -rf demo/site
-    node {{ tessello }}/packages/marketplace/scripts/build-site.ts --repo demo/repo --out demo/site --host {{ local_host }} --packages demo/packages
+    node scripts/build-site.mjs --repo demo/repo --out demo/site --host {{ local_host }} --packages demo/packages
     cp -R demo/packages demo/site/packages
 
 # Adds version <version> of a demo Module: its example's package with that version, which the Host offers as an update

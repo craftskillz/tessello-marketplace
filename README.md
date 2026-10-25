@@ -5,6 +5,17 @@ The free catalogue of [Tessello](https://github.com/craftskillz/tessello) Module
 - **Creators**: read [PUBLISHING.md](PUBLISHING.md) before opening a pull request.
 - **Users**: install Modules from the Marketplace screen of your Tessello Host. Report a Module with the **Report a Module** issue template.
 
+## Preview locally
+
+Run `just preview`, then open **http://127.0.0.1:8787/**. Stop the server with Ctrl+C; use `PORT=8788 just preview` if the default port is occupied. Requires Node 24+ and `just`. Building downloads the published Module packages.
+
+The same design is used by local previews, the demo catalogue, and the Cloudflare Build workflow. Local commands do **not** deploy anything.
+
+- Edit `web/theme.css` for styling or `web/presentation.mjs` for presentation markup. Run `just build`, then refresh the browser. Generated files live in ignored `site/`; `just serve` serves an existing build.
+- `scripts/build-site.mjs` runs the pinned Tessello generator, then applies the Marketplace presentation. It preserves `index.json`, search, permission filters, install links, guides, availability rules, assets, and CORS headers.
+- Run `just test` to check compatibility with the pinned generator, including unavailable Modules and HTML escaping. These checks also run in the Build workflow.
+- Install links open the configured Tessello Host (the hosted Tessello by default). To target an already running local Host, use `TESSELLO_HOST=http://127.0.0.1:8080/ just preview`.
+
 ## For the Maintainer
 
 - **Approval**: a new Module's pull request waits with the comment "awaits the Maintainer's Approval". Add the label `approved` to approve it: the CI checks it again, records its Namespace in `namespaces.json` if it is new, then merges it. A new commit on the pull request removes the label.
