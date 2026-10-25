@@ -1,0 +1,12 @@
+{
+  "id": "@craftskillz/watch-later",
+  "source": "https://github.com/craftskillz/tessello-watch-later",
+  "license": "MIT",
+  "versions": [
+    {
+      "version": "0.6.0",
+      "url": "https://craftskillz.github.io/tessello-watch-later/0.6.0.zip",
+      "sha256": "a0e9a5975a25c8ce9b78804f0cd31a1d8faf424d2e3110a7e024c96c09ae6458"
+    }
+  ]
+}
