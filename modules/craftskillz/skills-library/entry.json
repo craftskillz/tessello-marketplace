@@ -1,0 +1,12 @@
+{
+  "id": "@craftskillz/skills-library",
+  "source": "https://github.com/craftskillz/tessello-skills-library",
+  "license": "MIT",
+  "versions": [
+    {
+      "version": "0.4.0",
+      "url": "https://craftskillz.github.io/tessello-skills-library/0.4.0.zip",
+      "sha256": "f00b0530854a726243dccf03656cb45414955f26b15f3163583c4b03980ad833"
+    }
+  ]
+}
