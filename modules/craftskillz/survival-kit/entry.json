@@ -1,0 +1,12 @@
+{
+  "id": "@craftskillz/survival-kit",
+  "source": "https://github.com/craftskillz/tessello-survival-kit",
+  "license": "MIT",
+  "versions": [
+    {
+      "version": "1.2.0",
+      "url": "https://craftskillz.github.io/tessello-survival-kit/1.2.0.zip",
+      "sha256": "2ce9bd224afe2a996ed4462e6707f237c510651254050c64bc1e3fc2609a1b6d"
+    }
+  ]
+}
