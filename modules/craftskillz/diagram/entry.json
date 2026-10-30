@@ -47,6 +47,11 @@
       "version": "0.12.0",
       "url": "https://craftskillz.github.io/tessello-diagram/0.12.0.zip",
       "sha256": "d4d39da9559922a845627e40c9530190cbaf14a8b483660508031510776d305c"
+    },
+    {
+      "version": "0.13.0",
+      "url": "https://craftskillz.github.io/tessello-diagram/0.13.0.zip",
+      "sha256": "1e1790f64ba55da79d66727f7b19b6f2cb73a8224233085b6661c19345310112"
     }
   ]
 }
