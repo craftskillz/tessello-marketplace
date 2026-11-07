@@ -7,6 +7,11 @@
       "version": "0.1.0",
       "url": "https://craftskillz.github.io/tessello-git-integration/0.1.0.zip",
       "sha256": "73d7422172127980d1790483d984272c3bff70104790ddb4e15ebddf85374fa6"
+    },
+    {
+      "version": "0.1.1",
+      "url": "https://craftskillz.github.io/tessello-git-integration/0.1.1.zip",
+      "sha256": "e8492b247333ce3c968f2423ff4e9053ca000549e48a53e676ccfdee650d57df"
     }
   ]
 }
