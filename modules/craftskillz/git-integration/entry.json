@@ -1,0 +1,12 @@
+{
+  "id": "@craftskillz/git-integration",
+  "source": "https://github.com/craftskillz/tessello-git-integration",
+  "license": "MIT",
+  "versions": [
+    {
+      "version": "0.1.0",
+      "url": "https://craftskillz.github.io/tessello-git-integration/0.1.0.zip",
+      "sha256": "73d7422172127980d1790483d984272c3bff70104790ddb4e15ebddf85374fa6"
+    }
+  ]
+}
