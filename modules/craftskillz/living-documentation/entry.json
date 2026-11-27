@@ -1,0 +1,12 @@
+{
+  "id": "@craftskillz/living-documentation",
+  "source": "https://github.com/craftskillz/tessello-living-documentation",
+  "license": "MIT",
+  "versions": [
+    {
+      "version": "1.0.0",
+      "url": "https://craftskillz.github.io/tessello-living-documentation/1.0.0.zip",
+      "sha256": "03a54bc3d6c8bac70f7f864cec111428cfafc2bde38b2269413df99663242539"
+    }
+  ]
+}
