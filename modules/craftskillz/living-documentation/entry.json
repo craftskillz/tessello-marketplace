@@ -12,6 +12,11 @@
       "version": "1.1.0",
       "url": "https://craftskillz.github.io/tessello-living-documentation/1.1.0.zip",
       "sha256": "1df0f6088b4eb37e012eca38a71a835338cf41a14491f6fb1dc7f5ade2c40a55"
+    },
+    {
+      "version": "1.2.0",
+      "url": "https://craftskillz.github.io/tessello-living-documentation/1.2.0.zip",
+      "sha256": "33b692621866c4bf9655c7cd646f182c3ef4a97c2e34fd66a4fe42821043f4cb"
     }
   ]
 }
