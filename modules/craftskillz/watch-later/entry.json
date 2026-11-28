@@ -7,6 +7,11 @@
       "version": "0.6.0",
       "url": "https://craftskillz.github.io/tessello-watch-later/0.6.0.zip",
       "sha256": "a0e9a5975a25c8ce9b78804f0cd31a1d8faf424d2e3110a7e024c96c09ae6458"
+    },
+    {
+      "version": "0.7.0",
+      "url": "https://craftskillz.github.io/tessello-watch-later/0.7.0.zip",
+      "sha256": "8ede930ff603169954a145abb35e91ad86552bda38f260d38b70164836fb2781"
     }
   ]
 }
